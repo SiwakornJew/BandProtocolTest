@@ -1,0 +1,108 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Transaction Broadcasting and Monitoring API",
+    "description": "API for broadcasting transactions and monitoring their status.",
+    "version": "1.0.0"
+  },
+  "host": "127.0.0.1:5000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/broadcast": {
+      "post": {
+        "summary": "Broadcast a transaction",
+        "description": "Send a transaction to the mock server and get a transaction hash.\nThis endpoint expects a JSON payload with the following fields:\n\n- `symbol` (string): Transaction symbol, e.g., BTC.\n- `price` (uint64): Symbol price, e.g., 100000.\n- `timestamp` (uint64): Timestamp of price retrieval.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "symbol": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "integer"
+                },
+                "timestamp": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "symbol",
+                "price",
+                "timestamp"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction broadcasted successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tx_hash": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/status/{tx_hash}": {
+      "get": {
+        "summary": "Check transaction status",
+        "description": "Check the status of a transaction using its hash.\n\nThe transaction status can be one of the following:\n- `CONFIRMED`: Transaction has been processed and confirmed\n- `FAILED`: Transaction failed to process\n- `PENDING`: Transaction is awaiting processing\n- `DNE`: Transaction does not exist",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "tx_hash",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction status",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tx_status": {
+                  "type": "string",
+                  "enum": [
+                    "CONFIRMED",
+                    "FAILED",
+                    "PENDING",
+                    "DNE"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaction not found"
+          }
+        }
+      }
+    }
+  }
+}
